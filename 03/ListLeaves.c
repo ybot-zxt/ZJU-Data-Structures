@@ -104,11 +104,25 @@ void traverse_leaves(node T, int root){
 
         
         // 把左子树下表放到队列里
-        if (T[Queue[i]].left != null)
-            Queue[++rear] = T[Queue[i]].left;
+        if (T[Queue[i]].left != null){
+            if (rear + 1 >= MAX_Q_SIZE) {
+                printf("Error: Queue Overflow!\n");     // 错误处理：虽然这道题不应该发生，但工程上必须有这行
+                return; 
+                }
+            
+            Queue[++rear] = T[Queue[i]].left;                       // 依赖数据分布来保证内存安全！！！
+        }
+
+
     
-        if (T[Queue[i]].right != null)
-            Queue[++rear] = T[Queue[i]].right;
+        if (T[Queue[i]].right != null){
+            if (rear + 1 >= 10) {
+                printf("Error: Queue Overflow!\n");     // 错误处理：虽然这道题不应该发生，但工程上必须有这行
+                return; 
+                }
+            
+            Queue[++rear] = T[Queue[i]].right;                       // 依赖数据分布来保证内存安全！！！
+        }
     }
 
     return ;
