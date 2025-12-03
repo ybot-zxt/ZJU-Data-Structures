@@ -10,6 +10,7 @@ typedef struct tree
 
 int build_tree(node);
 void traverse_leaves(node, int);
+void traverse_leaves_re(node, int);
 
 #define null -1
 
@@ -64,7 +65,7 @@ int build_tree(node the_tree){
 
     return null;
 }
-
+// 用非循环链表实现的层序遍历
 void traverse_leaves(node T, int root){
     // 步骤一：初始化队列，让第一个元素是root，其他的都是-1
     int Queue[10];
@@ -95,6 +96,7 @@ void traverse_leaves(node T, int root){
     // 步骤二：使用队列开始遍历。
     int flag = 0;                                                   // 输出格式控制
     for (i = 0; i <= rear; i++){
+        
         if(T[Queue[i]].left == null && T[Queue[i]].right == null){  // 只需在普通的层序遍历前面加上条件判断即可
             if(flag) printf(" ");  
             printf("%d", T[Queue[i]].data);
@@ -105,7 +107,7 @@ void traverse_leaves(node T, int root){
         
         // 把左子树下表放到队列里
         if (T[Queue[i]].left != null){
-            if (rear + 1 >= MAX_Q_SIZE) {
+            if (rear + 1 >= 10) {
                 printf("Error: Queue Overflow!\n");     // 错误处理：虽然这道题不应该发生，但工程上必须有这行
                 return; 
                 }
@@ -127,4 +129,43 @@ void traverse_leaves(node T, int root){
 
     return ;
     
+}
+
+// 用循环链表实现的层序遍历
+void traverse_leaves_re(node T, int root){
+    int Queue[11];
+    int front = 0;
+    int rear = 0;
+    int temp_front = 0;
+    int is_first_to_print = 1;
+    // 放入根节点
+    Queue[rear] = root;
+    rear = (rear + 1) % 11;
+
+    while(front != rear){
+        // 如果这个元素是叶子，就打印
+        if((T[Queue[front]].left == null) && (T[Queue[front]].right == null)){
+            if(is_first_to_print == 0) printf(" ");
+            printf("%d",T[Queue[front]].data);
+            is_first_to_print = 0;
+        }
+        // 不管怎样都出栈
+        temp_front = front;
+        front = (front + 1) % 11;
+
+        // 左子树入栈
+        if (T[Queue[temp_front]].left != null){
+            Queue[rear] = T[Queue[temp_front]].left;
+            rear = (rear + 1) % 11;
+        }
+
+
+        // 右子树入栈
+        if (T[Queue[temp_front]].right != null){
+            Queue[rear] = T[Queue[temp_front]].right;
+            rear = (rear + 1) % 11;
+        }
+
+    }
+    return ;
 }
