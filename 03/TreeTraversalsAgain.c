@@ -31,17 +31,23 @@ int main(){
 }
 
 int traversals_using_stack(node T, int tot_node){
-    // 初始化一个栈
-    int stack[tot_node];
-    int top = 0;
 
-    // 初始化其他变量
-    int change_to_left_branch = 1; // 判断该放到left或right里面
-    char buffer[4] = "";    // 初始化一个存放push, pop字符的字符数组
-    char temp_data;
-    int is_root = 1;
+    // 初始化栈
+    int stack[tot_node];
+    int top = -1;
+
+    // 初始化建树时的判断变量
+    int root = -1;
+    int last_node = -1; // 记录上一个操作的index
+    int is_push = 0;    // 记录上一步是Push还是pop
+
+    // 初始化建树时的其他变量
+    int data;
+    char buffer[5];
+    int index = 0; // 储存在结构体数组中的下表
     int cnt = 0;
-    int index = 0;
+
+
 
     // 初始化树的左右子树
     for(index = 0; index < tot_node; index++){
@@ -50,42 +56,37 @@ int traversals_using_stack(node T, int tot_node){
     }
 
     for (index = 0; cnt < 2 * tot_node; cnt++){
-        scanf(" %s", &buffer);
-        // 入栈，
-        if (strcmp(buffer, "Push") == 0){
-            scanf(" %c", &temp_data);
-            change_to_left_branch = 1;
-            // 如果是根节点，只需考虑填自身的结构体，无需连接父节点
-            if(is_root){
-                stack[top] = 0;
-                T[index].data = temp_data - '0';
-                index++;
-                is_root = 0;
+        scanf(" %s", buffer);
+
+        if (strcmp("Push", buffer) == 0){       // Push INT
+            scanf("%d", &data);
+
+            T[index].data = data;
+
+            if (root == -1){
+                root = index;
             }
-            // 非根节点，不但要填自己的data，还要根据栈找到父节点，连接正确的子树
-            else{
-                // 父节点填入正确的left或right
-                if (change_to_left_branch){     // 如果现在是左子树，那么先找到栈中上一个节点，它是父节点地址，父节点处的left设为树的index
-                    T[stack[top-1]].left = index;
+            else{                               // 根节点不考虑放到哪个子树里面
+                if (is_push){                   // 上一步是push，data放在了栈顶元素的左边
+                    T[stack[top]].left = index;
                 }
-                else{
-                    T[stack[top-1]].right = index;
+                else{                           // 上一步是pop，data放在了被pop的元素中
+                    T[last_node].right = index;
                 }
-                // 该节点放入栈中，同时存入T中
-                stack[top] = temp_data - '0' - 1;
-                T[index].data = temp_data - '0';
-                index++;
             }
-            top++;
+
+            stack[++top] = index;
+            last_node = index;
+            is_push = 1;
+            index++;
+
         }
-        //出栈
-        else if(strcmp(buffer, "Pop") == 0){
+        else{
+            last_node = stack[top];
             top--;
-            change_to_left_branch = 0;
+            is_push = 0;
         }
     }
-
-
     return 0;
 
 }
